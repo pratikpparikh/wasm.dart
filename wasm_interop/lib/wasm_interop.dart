@@ -109,8 +109,11 @@ class Instance {
   Instance._(this.jsObject, this.module) {
     // Fill exports helper maps
     final exportsObject = jsObject.exports;
-    final catalog = _objectKeys(exportsObject) as List<String>;
+    final catalog = _objectKeys(exportsObject);
     for (final key in catalog) {
+      if (!(key is String)) {
+        continue;
+      }
       final dynamic value = getProperty(exportsObject, key);
       if (value is Function) {
         _functions[key] = ExportedFunction._(value);
@@ -168,7 +171,7 @@ class Instance {
           Object? importObject}) =>
       Instance._(
           _Instance(module.jsObject,
-              _reifyImports(importMap, importObject) as Object),
+              _reifyImports(importMap, importObject) as Object?),
           module);
 
   /// Synchronously compiles and instantiates WebAssembly from [Uint8List]
@@ -223,7 +226,7 @@ class Instance {
           {Map<String, Map<String, Object>>? importMap,
           Object? importObject}) =>
       _futureFromPromise(_instantiateModule(module.jsObject,
-              _reifyImports(importMap, importObject) as Object))
+              _reifyImports(importMap, importObject) as Object?))
           .then((_instance) => Instance._(_instance, module));
 
   /// Asynchronously compiles WebAssembly Module from [Uint8List] source and
@@ -234,7 +237,7 @@ class Instance {
           {Map<String, Map<String, Object>>? importMap,
           Object? importObject}) =>
       _futureFromPromise(_instantiate(
-              bytes, _reifyImports(importMap, importObject) as Object))
+              bytes, _reifyImports(importMap, importObject) as Object?))
           .then((_source) => Instance._(
               _source.instance, Module.fromJsObject(_source.module)));
 
@@ -246,7 +249,7 @@ class Instance {
           {Map<String, Map<String, Object>>? importMap,
           Object? importObject}) =>
       _futureFromPromise(_instantiate(
-              buffer, _reifyImports(importMap, importObject) as Object))
+              buffer, _reifyImports(importMap, importObject) as Object?))
           .then((_source) => Instance._(
               _source.instance, Module.fromJsObject(_source.module)));
 
@@ -708,10 +711,10 @@ external _Promise<_Module> _compile(Object bytesOrBuffer);
 
 @JS('WebAssembly.instantiate')
 external _Promise<_WebAssemblyInstantiatedSource> _instantiate(
-    Object bytesOrBuffer, Object import);
+    Object bytesOrBuffer, Object? import);
 
 @JS('WebAssembly.instantiate')
-external _Promise<_Instance> _instantiateModule(_Module module, Object import);
+external _Promise<_Instance> _instantiateModule(_Module module, Object? import);
 
 @JS('WebAssembly.Module')
 class _Module {
@@ -730,7 +733,7 @@ class _Module {
 
 @JS('WebAssembly.Instance')
 class _Instance {
-  external _Instance(_Module module, Object import);
+  external _Instance(_Module module, Object? import);
   external Object get exports;
 }
 
