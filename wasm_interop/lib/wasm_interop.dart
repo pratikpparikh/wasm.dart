@@ -246,14 +246,12 @@ class Instance {
   ///
   /// See [Instance.fromModule] regarding [importMap] and [importObject] usage.
   static Future<Instance> fromBufferAsync(ByteBuffer buffer,
-      {Map<String, Map<String, Object>>? importMap, Object? importObject}) {
-    final reifyImportObject = _reifyImports(importMap, importObject) as Object?;
-    return _futureFromPromise(reifyImportObject == null
-            ? _instantiate(buffer)
-            : _instantiate(buffer, reifyImportObject))
-        .then((_source) =>
-            Instance._(_source.instance, Module.fromJsObject(_source.module)));
-  }
+          {Map<String, Map<String, Object>>? importMap,
+          Object? importObject}) =>
+      _futureFromPromise(_instantiate(
+              buffer, _reifyImports(importMap, importObject) as Object?))
+          .then((_source) => Instance._(
+              _source.instance, Module.fromJsObject(_source.module)));
 
   static dynamic _reifyImports(
       Map<String, Map<String, Object>>? importMap, Object? importObject) {
@@ -713,8 +711,7 @@ external _Promise<_Module> _compile(Object bytesOrBuffer);
 
 @JS('WebAssembly.instantiate')
 external _Promise<_WebAssemblyInstantiatedSource> _instantiate(
-    Object bytesOrBuffer,
-    [Object? import]);
+    Object bytesOrBuffer, Object? import);
 
 @JS('WebAssembly.instantiate')
 external _Promise<_Instance> _instantiateModule(_Module module, Object? import);
