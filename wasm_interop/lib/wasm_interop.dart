@@ -307,7 +307,7 @@ class Instance {
       return importObject;
     }
 
-    return _undefined;
+    return newObject();
   }
 }
 
