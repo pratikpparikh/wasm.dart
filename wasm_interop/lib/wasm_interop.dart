@@ -109,8 +109,11 @@ class Instance {
   Instance._(this.jsObject, this.module) {
     // Fill exports helper maps
     final exportsObject = jsObject.exports;
-    final catalog = _objectKeys(exportsObject) as List<String>;
+    final catalog = _objectKeys(exportsObject);
     for (final key in catalog) {
+      if (!(key is String)) {
+        continue;
+      }
       final dynamic value = getProperty(exportsObject, key);
       if (value is Function) {
         _functions[key] = ExportedFunction._(value);
