@@ -792,3 +792,17 @@ Future<T> _futureFromPromise<T>(_Promise<T> promise) {
       allowInterop(completer.complete), allowInterop(completer.completeError));
   return completer.future;
 }
+
+@JS('TextEncoder')
+class TextEncoder {
+  external Object get encoding;
+  external Object encode(Object arg);
+  external Object encodeInto(Object arg, Object uint8Array);
+}
+
+@JS('TextDecoder')
+class TextDecoder {
+  external Object get encoding;
+  external TextDecoder([Object utfLabel = 'utf-8', Object? optionsOptional]);
+  external Object decode([Object? buffer, Object? options]);
+}
